@@ -28,7 +28,6 @@ Sistema web completo para controle de estoque de uniformes, com gestão de funci
 
 ## ⚙️ Configuração Inicial
 
-
 ### 1. Clone o repositório
 ```bash
 git clone https://github.com/uANDYANO/estoque-manager-nuvest.git
@@ -42,9 +41,9 @@ venv\Scripts\activate
 ### 3. Instale as dependências
 ```bash
 pip install -r requirements.txt
-
-🔐 Variáveis de Ambiente
-
+```
+### 🔐 Variáveis de Ambiente
+```bash
 Crie um arquivo .env na raiz do projeto com as seguintes variáveis:
 
 FLASK_SECRET_KEY=sua_chave_segura
@@ -53,16 +52,19 @@ DATABASE_PORT=3306
 DATABASE_USER=root
 DATABASE_PASSWORD=suasenha
 DATABASE_NAME=estoque_manager
-
-🧪 Executar em Desenvolvimento
-
+```
+### 🧪 Executar em Desenvolvimento
+```bash
 python app.py
 
 Acesse: http://localhost:5000
-🏭 Deploy em Produção (Windows)
-Usando NSSM
+```
 
-    Gere o .exe com auto-py-to-exe ou use app.py diretamente.
+### 🏭 Deploy em Produção (Windows)
+```bash
+Usando NSSM (Non-Sucking Service Manager)
+
+    Gere o .exe com auto-py-to-exe ou use diretamente o app.py.
 
     Crie um .bat de inicialização:
 
@@ -71,27 +73,32 @@ cd /d C:\EstoqueManager
 call venv\Scripts\activate
 python app.py
 
-    Adicione o serviço no NSSM:
+    Configure no NSSM:
 
-        Path: C:\EstoqueManager\venv\Scripts\python.exe
+Path: C:\EstoqueManager\venv\Scripts\python.exe
+Arguments: app.py
+Startup directory: C:\EstoqueManager
+```
+### 💾 Backup Diário (MySQL)
+```bash
+Você pode usar o Agendador de Tarefas do Windows com PowerShell para backup automático.
 
-        Arguments: app.py
+Script de exemplo disponível em:
+/scripts/backup_mysql.ps1
+```
 
-        Startup directory: C:\EstoqueManager
-
-💾 Backup Diário (MySQL)
-
-Você pode usar o agendador de tarefas com PowerShell para backup automático. Exemplo de script disponível em /scripts/backup_mysql.ps1.
-👨‍💻 Criar Usuário
-
+### 👨‍💻 Criar Usuário
+```bash
 python criar_usuario.py
+```
 
-🔒 Atualizar Senha
-
+### 🔒 Atualizar Senha
+```bash
 python atualizar_senha.py
+```
 
-📁 Estrutura de Pastas
-
+### 📁 Estrutura de Pastas
+```bash
 /templates/               → Arquivos HTML (Jinja2)
 /static/css/              → Estilos CSS
 /static/js/               → Scripts JS
@@ -100,8 +107,33 @@ python atualizar_senha.py
 /.env                     → Variáveis de ambiente
 /requirements.txt         → Dependências Python
 ```
+
+### 🖼️ Capturas de Tela
+
+<img src="https://github.com/uANDYANO/estoque-manager-nuvest/blob/main/static/img/login-page.png" alt="login">
+    
+<img src="https://github.com/uANDYANO/estoque-manager-nuvest/blob/main/static/img/dashboard-page.png" alt="dashborad">
+
+
+### 🔒 Notas de Segurança
+```bash
+    Nunca envie o arquivo .env para o GitHub (adicione ao .gitignore)
+
+    Use senhas seguras e altere FLASK_SECRET_KEY
+
+    Restrinja acesso ao servidor de produção
+
+    Faça backups frequentes
+
+    Utilize ambientes separados para desenvolvimento e produção
+```
+### 💼 Licença
+```bash
+Este projeto está licenciado sob a MIT License.
+Você pode usá-lo, modificá-lo e distribuí-lo livremente, com os devidos créditos.
+```
 👨‍💼 Desenvolvido por
 
 Anderson Salviano
 📧 andyanodev@gmail.com
-🔗 https://github.com/andyanodev
+🔗 github.com/andyanodev
