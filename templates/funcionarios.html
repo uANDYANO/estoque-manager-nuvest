@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4 animate-entry">
+    <h2 class="text-primary fw-bold mb-4">
+        <i class="bi bi-people-fill me-2"></i>Cadastro de Funcionários
+    </h2>
+
+    <div class="card shadow-sm rounded-3">
+        <div class="card-body">
+            <!-- Botão para mostrar formulário -->
+            <button id="botaoToggleCadastro" class="btn btn-primary mb-3" onclick="toggleFormularioCadastro()">
+                <i class="bi bi-person-plus-fill me-1"></i>Cadastrar Novo Funcionário
+            </button>
+
+            <!-- Formulário de cadastro -->
+            <div id="formularioCadastro" class="mb-2">
+                <form method="POST" class="p-3 border rounded bg-light">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-semibold">Matrícula:</label>
+                            <input type="text" class="form-control" name="matricula" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-semibold">Nome:</label>
+                            <input type="text" class="form-control" name="nome" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="unidade" class="form-label fw-semibold"><i class="bi bi-building me-1"></i>Unidade</label>
+                            <select class="form-select" name="unidade_id" id="unidade" required>
+                                <option value="">Selecione a unidade</option>
+                                {% for unidade in unidades %}
+                                    <option value="{{ unidade.id }}">{{ unidade.nome }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>                        
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-semibold">Função:</label>
+                            <input type="text" class="form-control" name="funcao">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-semibold">Data de Admissão:</label>
+                            <input type="date" class="form-control" name="admissao">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success mt-2">
+                        <i class="bi bi-save me-1"></i>Salvar
+                    </button>
+                </form>
+            </div>
+
+            <!-- Filtros -->
+            <form method="get" class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <i class="bi bi-person-lines-fill text-primary me-1"></i>
+                    <label for="filtro_nome" class="form-label fw-semibold">Nome do Funcionário</label>
+                    <input type="text" name="filtro_nome" id="filtro_nome"
+                        value="{{ request.args.get('filtro_nome', '') }}" class="form-control"
+                        placeholder="Digite o nome...">
+                </div>
+
+                <div class="col-md-2">
+                    <i class="bi bi-person-badge text-info me-1"></i>
+                    <label for="filtro_matricula" class="form-label fw-semibold">Matrícula</label>
+                    <input type="text" name="filtro_matricula" id="filtro_matricula"
+                        value="{{ request.args.get('filtro_matricula', '') }}" class="form-control"
+                        placeholder="Ex: 123">
+                </div>
+
+                <div class="col-md-3">
+                    <i class="bi bi-building text-success me-1"></i>
+                    <label for="filtro_setor" class="form-label fw-semibold">Setor / Unidade</label>
+                    <select name="filtro_unidade_id" class="form-select">
+                        <option value="">Todas as Unidades</option>
+                        {% for u in unidades %}
+                        <option value="{{ u.id }}" {% if filtro_unidade_id == u.id %}selected{% endif %}>
+                            {{ u.nome }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Filtrar
+                    </button>
+                </div>
+
+                <div class="col-md-2 d-flex align-items-end">
+                    <a href="{{ url_for('funcionarios') }}" class="btn btn-outline-secondary w-100">
+                        <i class="bi bi-x-circle"></i> Limpar
+                    </a>
+                </div>
+            </form>
+
+
+            <!-- Tabela -->
+            <div class="table-responsive shadow-sm rounded border">
+                <table class="table table-bordered table-striped align-middle table-hover" id="tabelaFuncionarios">
+                    <thead class="table-dark">
+                        <tr>
+                            <th><i class="bi bi-person-badge text-info me-1"></i>Matrícula</th>
+                            <th><i class="bi bi-person-lines-fill text-primary me-1"></i>Nome</th>
+                            <th><i class="bi bi-building text-success me-1"></i>Setor</th>
+                            <th><i class="bi bi-briefcase text-warning me-1"></i>Função</th>
+                            <th><i class="bi bi-calendar-event text-secondary me-1"></i>Admissão</th>
+                            <th class="text-center"><i class="bi bi-gear me-1"></i>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for f in funcionarios.items %}
+                        <tr>
+                            <td>{{ f.matricula }}</td>
+                            <td>{{ f.nome }}</td>
+                            <td>{{ f.unidade.nome }}</td>
+                            <td>{{ f.funcao }}</td>
+                            <td>{{ f.admissao.strftime('%d/%m/%Y') }}</td>
+                            <td class="text-center d-flex">
+                                <a href="{{ url_for('editar_funcionario', id=f.id) }}"
+                                    class="btn btn-sm btn-warning me-1" title="Editar">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <form action="{{ url_for('inativar_funcionario', id=f.id) }}" method="POST"
+                                    style="display:inline-block;"
+                                    onsubmit="return confirm('Deseja realmente excluir este funcionário?')">
+                                    <button class="btn btn-sm btn-danger" title="Excluir">
+                                        <i class="bi bi-x-circle"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="12" class="text-center text-muted">Nenhum registro encontrado.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <!-- Paginação -->
+                <nav class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if funcionarios.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('funcionarios', pagina=funcionarios.prev_num,
+                                filtro_nome=filtro_nome,
+                                filtro_matricula=filtro_matricula,
+                                filtro_setor=filtro_setor) }}">Anterior</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+                        {% endif %}
+
+                        {% for page_num in funcionarios.iter_pages(left_edge=1, right_edge=1, left_current=2,
+                        right_current=2) %}
+                        {% if page_num %}
+                        {% if page_num == funcionarios.page %}
+                        <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                        {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('funcionarios', pagina=page_num,
+                                            filtro_nome=filtro_nome,
+                                            filtro_matricula=filtro_matricula,
+                                            filtro_setor=filtro_setor) }}">{{ page_num }}</a>
+                        </li>
+                        {% endif %}
+                        {% else %}
+                        <li class="page-item disabled"><span class="page-link">…</span></li>
+                        {% endif %}
+                        {% endfor %}
+
+                        {% if funcionarios.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('funcionarios', pagina=funcionarios.next_num,
+                                filtro_nome=filtro_nome,
+                                filtro_matricula=filtro_matricula,
+                                filtro_setor=filtro_setor) }}">Próxima</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled"><span class="page-link">Próxima</span></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

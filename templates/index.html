@@ -1,0 +1,169 @@
+<!-- templates/index.html -->
+{% extends 'base.html' %}
+
+{% block title %}Nuvest{% endblock %}
+
+{% block content %}
+<div class="container mt-4 animate-entry">
+
+    <div class="text-center">
+        <h1 class="display-5 fw-bold text-primary mb-3">
+            <i class="bi bi-box-seam-fill me-2"></i>Bem-vindo ao Nuvest
+        </h1>
+        <p class="lead mb-4 text-muted">Sistema inteligente de controle e gestão de uniformes corporativos.</p>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mt-4 mb-4">
+        <div class="col">
+            <a href="{{ url_for('funcionarios') }}" class="text-decoration-none">
+                <div class="card h-100 shadow-sm border-start border-4 border-primary hover-card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-people-fill display-4 text-primary mb-2"></i>
+                        <h5 class="card-title fw-bold">Funcionários</h5>
+                        <p class="card-text text-muted">Gerencie cadastros, funções e unidades.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col">
+            <a href="{{ url_for('uniformes') }}" class="text-decoration-none">
+                <div class="card h-100 shadow-sm border-start border-4 border-success hover-card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-boxes display-4 text-success mb-2"></i>
+                        <h5 class="card-title fw-bold">Estoque</h5>
+                        <p class="card-text text-muted">Visualize e administre os uniformes disponíveis.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col">
+            <a href="{{ url_for('movimentacoes') }}" class="text-decoration-none">
+                <div class="card h-100 shadow-sm border-start border-4 border-warning hover-card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-arrow-left-right display-4 text-warning mb-2"></i>
+                        <h5 class="card-title fw-bold">Movimentações</h5>
+                        <p class="card-text text-muted">Registre entregas, devoluções e controle de uso.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col">
+            <a href="{{ url_for('entradas_estoque') }}" class="text-decoration-none">
+                <div class="card h-100 shadow-sm border-start border-4 border-info hover-card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-plus-circle display-4 text-info mb-2"></i>
+                        <h5 class="card-title fw-bold">Entradas de Estoque</h5>
+                        <p class="card-text text-muted">Registre reposições, trocas e novos lotes de uniformes.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mt-4">
+
+        <!-- Funcionários -->
+        <div class="col">
+            <div class="card shadow-sm rounded-3 border-0 bg-light position-relative h-100 card-dashboard" data-bs-toggle="tooltip" title="Total de funcionários ativos e inativos">
+                <div class="card-body">
+                    <h6 class="text-muted">
+                        <i class="bi bi-people-fill text-success me-2"></i>
+                        Funcionários
+                    </h6>
+                    <h3 class="fw-bold">{{ dados_resumo.funcionarios.ativos }}</h3>
+                    <p class="mb-1 text-muted small">Inativos: {{ dados_resumo.funcionarios.inativos }}</p>
+
+                    <div class="progress" style="height: 6px;">
+                        {% set total = dados_resumo.funcionarios.ativos + dados_resumo.funcionarios.inativos %}
+                        {% set percentual = (dados_resumo.funcionarios.ativos / total) * 100 if total > 0 else 0 %}
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ percentual }}%;"
+                            aria-valuenow="{{ percentual }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Uniformes -->
+        <div class="col">
+            <div class="card shadow-sm rounded-3 border-0 bg-light position-relative h-100 card-dashboard" data-bs-toggle="tooltip" title="Uniformes ativos disponíveis no estoque">
+                <div class="card-body">
+                    <h6 class="text-muted">
+                        <i class="bi bi-boxes text-primary me-2"></i>
+                        Uniformes
+                    </h6>
+                    <h3 class="fw-bold">{{ dados_resumo.uniformes.ativos }}</h3>
+                    <p class="mb-1 text-muted small">Inativos: {{ dados_resumo.uniformes.inativos }}</p>
+
+                    <div class="progress" style="height: 6px;">
+                        {% set total = dados_resumo.uniformes.ativos + dados_resumo.uniformes.inativos %}
+                        {% set percentual = (dados_resumo.uniformes.ativos / total) * 100 if total > 0 else 0 %}
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: {{ percentual }}%;"
+                            aria-valuenow="{{ percentual }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Movimentações -->
+        <div class="col">
+            <div class="card shadow-sm rounded-3 border-0 bg-light position-relative h-100 card-dashboard" data-bs-toggle="tooltip" title="Total de movimentações registradas">
+                <div class="card-body">
+                    <h6 class="text-muted">
+                        <i class="bi bi-arrow-left-right text-warning me-2"></i>
+                        Movimentações
+                    </h6>
+                    <h3 class="fw-bold">{{ dados_resumo.movimentacoes.ativas }}</h3>
+                    <p class="mb-1 text-muted small">Canceladas: {{ dados_resumo.movimentacoes.canceladas }}</p>
+
+                    <div class="progress" style="height: 6px;">
+                        {% set total = dados_resumo.movimentacoes.ativas + dados_resumo.movimentacoes.canceladas %}
+                        {% set percentual = (dados_resumo.movimentacoes.ativas / total) * 100 if total > 0 else 0 %}
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: {{ percentual }}%;"
+                            aria-valuenow="{{ percentual }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Entradas de Estoque -->
+        <div class="col">
+            <div class="card shadow-sm rounded-3 border-0 bg-light position-relative h-100 card-dashboard" data-bs-toggle="tooltip" title="Entradas de novos uniformes no estoque">
+                <div class="card-body">
+                    <h6 class="text-muted">
+                        <i class="bi bi-truck text-info me-2"></i>
+                        Entradas
+                    </h6>
+                    <h3 class="fw-bold">{{ dados_resumo.entradas.ativas }}</h3>
+                    <p class="mb-1 text-muted small">Canceladas: {{ dados_resumo.entradas.canceladas }}</p>
+
+                    <div class="progress" style="height: 6px;">
+                        {% set total = dados_resumo.entradas.ativas + dados_resumo.entradas.canceladas %}
+                        {% set percentual = (dados_resumo.entradas.ativas / total) * 100 if total > 0 else 0 %}
+                        <div class="progress-bar bg-info" role="progressbar" style="width: {{ percentual }}%;"
+                            aria-valuenow="{{ percentual }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="text-center mt-5 text-muted small">
+        <i class="bi bi-shield-check text-primary"></i> Segurança e eficiência para sua gestão de uniformes.
+    </div>
+
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+            new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    });
+
+</script>
+{% endblock %}

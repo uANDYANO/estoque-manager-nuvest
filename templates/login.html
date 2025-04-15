@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<body class="login-page">
+    <div class="login-wrapper d-flex align-items-center justify-content-center">
+        <div class="login-overlay"></div>
+        <div class="card card-login shadow-lg p-4 border-0">
+            <div class="text-center mb-4">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="m-0 p-0" style="max-height: 120px;">
+                <h4 class="fw-semibold mt-2">Acesso ao Sistema</h4>
+                <p class="text-muted small">Informe suas credenciais abaixo</p>
+            </div>
+    
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="mb-3">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+    
+            <form method="POST" class="needs-validation" novalidate>
+                <div class="mb-3">
+                    <label for="username" class="form-label"><i class="bi bi-person-circle me-1"></i>Usuário</label>
+                    <input type="text" name="username" class="form-control" id="username" required placeholder="ex: j.silva">
+                    <div class="invalid-feedback">Informe um e-mail válido.</div>
+                </div>
+    
+                <div class="mb-3">
+                    <label for="senha" class="form-label"><i class="bi bi-lock me-1"></i>Senha</label>
+                    <div class="input-group">
+                        <input type="password" name="senha" class="form-control" id="senha" required placeholder="••••••••">
+                        <button type="button" class="btn btn-outline-secondary" id="toggleSenha" tabindex="-1">
+                            <i class="bi bi-eye" id="iconeSenha"></i>
+                        </button>
+                    </div>
+                    <div class="invalid-feedback">Informe sua senha.</div>
+                </div>
+    
+                <div class="form-check mb-3">
+                    <input type="checkbox" class="form-check-input" id="manterConectado" name="manter_conectado">
+                    <label class="form-check-label" for="manterConectado">Manter-me conectado</label>
+                </div>
+    
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-success btn-lg shadow-sm">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Entrar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+<script>
+    // Validação de formulário
+    (() => {
+        'use strict';
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+
+    // Mostrar/esconder senha
+    document.getElementById('toggleSenha').addEventListener('click', function () {
+        const senhaInput = document.getElementById('senha');
+        const icone = document.getElementById('iconeSenha');
+
+        if (senhaInput.type === 'password') {
+            senhaInput.type = 'text';
+            icone.classList.replace('bi-eye', 'bi-eye-slash');
+        } else {
+            senhaInput.type = 'password';
+            icone.classList.replace('bi-eye-slash', 'bi-eye');
+        }
+    });
+</script>
+{% endblock %}

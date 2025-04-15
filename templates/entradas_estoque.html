@@ -1,0 +1,256 @@
+<!-- templates/entradas_estoque.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5 animate-entry">
+    <h2 class="text-primary fw-bold mb-4"><i class="bi bi-box-seam me-2"></i>Entradas de Estoque</h2>
+
+    <!-- Formulário de entrada -->
+    <!-- Botão para mostrar/ocultar formulário -->
+    <button class="btn btn-success mb-3" id="botaoToggleEntrada" onclick="toggleFormularioEntrada()">
+        <i class="bi bi-plus-circle me-1"></i> Novo Registro de Entrada
+    </button>
+
+    <div id="formularioEntrada" class="card p-2 mb-4 shadow-sm border border-success" style="display: none;">
+        <div class="card-body">
+            <h4 class="mb-3 text-success">
+                <i class="bi bi-plus-circle"></i> Novo Registro de Entrada
+            </h4>
+
+            <form method="POST" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold"><i class="bi bi-tag me-1"></i>Uniforme</label>
+                    <select name="uniforme_id" class="form-select" id="uniformeSelect" required>
+                        <option value="">Selecione</option>
+                        {% for uniforme in uniformes %}
+                        <option value="{{ uniforme.id }}" data-status="{{ uniforme.status }}"
+                            data-tamanho="{{ uniforme.tamanho }}">
+                            {{ uniforme.tipo }} - {{ uniforme.tamanho }} - {{ uniforme.status }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold"><i class="bi bi-info-circle me-1"></i>Status</label>
+                    <input type="text" class="form-control" id="statusInput" readonly>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold"><i class="bi bi-arrows-expand me-1"></i>Tamanho</label>
+                    <input type="text" class="form-control" id="tamanhoInput" readonly>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold"><i class="bi bi-hash me-1"></i>Quantidade</label>
+                    <input type="number" name="quantidade" class="form-control" required min="1">
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold"><i class="bi bi-pencil me-1"></i>Motivo</label>
+                    <input type="text" name="motivo" class="form-control" placeholder="Ex: Reposição, Troca..."
+                        required>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold"><i class="bi bi-calendar-event me-1"></i>Data da
+                        Entrada</label>
+                    <input type="date" class="form-control" name="data_entrada" required>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold"><i class="bi bi-receipt me-1"></i>Nota Fiscal</label>
+                    <input type="text" name="nota_fiscal" class="form-control" placeholder="Opcional">
+                </div>
+
+                <div class="row mt-3 justify-content-end">
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="bi bi-check-circle"></i> Registrar Entrada
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card border-primary shadow-sm p-2 mb-4">
+        <div class="card-body">
+            <h4 class="mb-3 text-primary">
+                <i class="bi bi-funnel-fill"></i> Filtros de Pesquisa
+            </h4>
+
+            <form method="GET" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold"><i class="bi bi-tags me-1"></i>Tipo de Uniforme</label>
+                    <select class="form-select" name="filtro_tipo">
+                        <option value="">Todos</option>
+                        {% for tipo in tipos_uniforme %}
+                        <option value="{{ tipo }}" {% if request.args.get('filtro_tipo')==tipo %}selected{% endif %}>
+                            {{ tipo }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold"><i class="bi bi-arrows-expand me-1"></i>Tamanho</label>
+                    <select class="form-select" name="filtro_tamanho">
+                        <option value="">Todos</option>
+                        {% for tamanho in tamanhos_uniforme %}
+                        <option value="{{ tamanho }}" {% if request.args.get('filtro_tamanho')==tamanho %}selected{%
+                            endif %}>{{ tamanho }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold"><i class="bi bi-sliders me-1"></i>Status</label>
+                    <select class="form-select" id="filtro_cancelado" name="filtro_cancelado">
+                        <option value="todos" {% if filtro_cancelado=='todos' or not filtro_cancelado %}selected{% endif
+                            %}>
+                            Todos</option>
+                        <option value="ativos" {% if filtro_cancelado=='ativos' %}selected{% endif %}>Ativos</option>
+                        <option value="inativos" {% if filtro_cancelado=='inativos' %}selected{% endif %}>Cancelados
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold"><i class="bi bi-calendar-check me-1"></i>Data Início</label>
+                    <input type="date" name="data_inicio" class="form-control"
+                        value="{{ request.args.get('data_inicio', '') }}">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold"><i class="bi bi-calendar-x me-1"></i>Data Fim</label>
+                    <input type="date" name="data_fim" class="form-control"
+                        value="{{ request.args.get('data_fim', '') }}">
+                </div>
+
+                <div class="col-md-12 d-flex justify-content-start gap-2 mt-3">
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-search me-1"></i>Filtrar
+                        </button>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="{{ url_for('entradas_estoque') }}" class="btn btn-outline-secondary w-100">
+                            <i class="bi bi-x-circle me-1"></i>Limpar
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Tabela -->
+    <div class="card shadow-sm rounded-2">
+        <div class="card-body">
+            <h5 class="card-title fw-semibold mb-4"><i class="bi bi-boxes me-2"></i>Registros de Entradas</h5>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th><i class="bi bi-tags me-1"></i>Uniforme</th>
+                            <th><i class="bi bi-bar-chart me-1"></i>Status</th>
+                            <th><i class="bi bi-arrows-expand me-1"></i>Tamanho</th>
+                            <th><i class="bi bi-sort-numeric-up me-1"></i>Quantidade</th>
+                            <th><i class="bi bi-info-circle me-1"></i>Motivo</th>
+                            <th><i class="bi bi-receipt me-1"></i>Nota Fiscal</th>
+                            <th><i class="bi bi-calendar-check me-1"></i>Data da Entrada</th>
+                            <th><i class="bi bi-clock-history me-1"></i>Data do Registro</th>
+                            <th><i class="bi bi-gear me-1"></i>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entrada in entradas.items %}
+                        <tr>
+                            <td>{{ entrada.uniforme.tipo }}</td>
+                            <td>{{ entrada.status }}</td>
+                            <td>{{ entrada.tamanho }}</td>
+                            <td>{{ entrada.quantidade }}</td>
+                            <td>{{ entrada.motivo }}</td>
+                            <td>{{ entrada.nota_fiscal or '-' }}</td>
+                            <td>{{ entrada.data_entrada.strftime('%d/%m/%Y') }}</td>
+                            <td>{{ entrada.data_registro.strftime('%d/%m/%Y %H:%M') }}</td>
+                            <td>
+                                {% if entrada.ativo %}
+                                <form method="POST"
+                                    action="{{ url_for('inativar_entrada_estoque', entrada_id=entrada.id) }}"
+                                    onsubmit="return confirm('Tem certeza que deseja cancelar esta entrada?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-x-circle"></i> Cancelar
+                                    </button>
+                                </form>
+                                {% else %}
+                                <span class="badge bg-secondary">Cancelado</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="10" class="text-center text-muted">Nenhum registro encontrado.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginação -->
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if entradas.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('entradas_estoque', pagina=entradas.prev_num,
+                filtro_tipo=filtro_tipo,
+                filtro_tamanho=filtro_tamanho,
+                filtro_cancelado=filtro_cancelado,
+                data_inicio=data_inicio,
+                data_fim=data_fim) }}">Anterior</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+                    {% endif %}
+
+                    {% for page_num in entradas.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2)
+                    %}
+                    {% if page_num %}
+                    {% if page_num == entradas.page %}
+                    <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                    {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('entradas_estoque', pagina=page_num,
+                            filtro_tipo=filtro_tipo,
+                            filtro_tamanho=filtro_tamanho,
+                            filtro_cancelado=filtro_cancelado,
+                            data_inicio=data_inicio,
+                            data_fim=data_fim) }}">{{ page_num }}</a>
+                    </li>
+                    {% endif %}
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link">…</span></li>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if entradas.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('entradas_estoque', pagina=entradas.next_num,
+                filtro_tipo=filtro_tipo,
+                filtro_tamanho=filtro_tamanho,
+                filtro_cancelado=filtro_cancelado,
+                data_inicio=data_inicio,
+                data_fim=data_fim) }}">Próxima</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link">Próxima</span></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+{% endblock %}

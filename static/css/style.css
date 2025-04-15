@@ -1,0 +1,391 @@
+/* =======================================
+   1. ESTILOS GLOBAIS E ESTRUTURA BÁSICA
+======================================= */
+body {
+    background-color: #f9f9f9;
+}
+
+footer {
+    padding: 10px 0;
+    color: #666;
+}
+
+input, select {
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+input:focus, select:focus {
+    border-color: #198754;
+    background-color: #f8fff6;
+}
+
+.footer-custom {
+    background-color: #f8f9fa;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.footer-custom a {
+    color: #0d6efd;
+}
+
+.footer-custom a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 576px) {
+    .footer-custom .row {
+        text-align: center !important;
+    }
+}
+
+/* =======================================
+   2. BOTÕES COM EFEITO SUAVE
+======================================= */
+.btn {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+}
+
+/* =======================================
+   3. ANIMAÇÃO DE ENTRADA DE ELEMENTOS
+======================================= */
+@keyframes fadeSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-entry {
+    animation: fadeSlideUp 0.6s ease-out;
+}
+
+/* =======================================
+   4. CONTAINERS E LAYOUTS PADRÃO
+======================================= */
+.filter-container,
+.table-container {
+    animation: fadeSlideUp 0.6s ease-out;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+    margin-bottom: 1.5rem;
+}
+
+/* =======================================
+   5. ESTILOS PARA TABELAS GERAIS
+======================================= */
+.table-container table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-container th,
+.table-container td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.table-container table tr:hover {
+    background-color: #f8f9fa;
+    transition: background-color 0.3s ease;
+}
+
+.table-header-small th {
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+#tabelaFuncionarios tbody tr:hover {
+    background-color: #f0f8ff;
+    transition: 0.3s ease-in-out;
+}
+
+/* Responsividade para tabelas longas */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Em telas menores, reduz o tamanho da fonte e espaçamento */
+@media (max-width: 1366px) {
+    .table th,
+    .table td {
+        font-size: 0.80rem;
+        padding: 0.3rem;
+    }
+
+    .table thead {
+        font-size: 0.9rem;
+    }
+
+    .table .btn {
+        font-size: 0.75rem;
+        padding: 0.20rem 0.2rem;
+    }
+}
+
+/* =======================================
+   6. CARDS DE UNIFORMES
+======================================= */
+.card-uniforme {
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease;
+    font-weight: bold;
+}
+
+.card-uniforme:hover {
+    transform: scale(1.02);
+}
+
+.card-novo {
+    background-color: #e6f4ea;
+}
+
+.card-usado {
+    background-color: #f8f9fa;
+}
+
+.card-quantidade-baixa {
+    background-color: #fff8e1;
+}
+
+.titulo-uniforme {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #555;
+}
+
+.quantidade-alerta {
+    color: #d9534f;
+    font-weight: bold;
+}
+
+.quantidade-normal {
+    color: green;
+    font-weight: bold;
+}
+
+/* =======================================
+   7. BARRA DE PROGRESSO (CARDS)
+======================================= */
+.progress {
+    height: 0.75rem;
+    border-radius: 1rem;
+}
+
+.progress-bar {
+    font-size: 0.7rem;
+}
+
+/* =======================================
+   8. ANIMAÇÕES DE EXIBIÇÃO/OCULTAÇÃO DE CARDS
+======================================= */
+.col {
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.col.fade-out {
+    opacity: 0;
+    transform: scale(0.95);
+    transition: all 0.2s ease;
+    pointer-events: none;
+}
+
+.col.fade-in {
+    opacity: 1;
+    transform: scale(1);
+    transition: all 0.3s ease;
+}
+
+.col.hidden {
+    display: none !important;
+    height: 0;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden;
+}
+
+/* =======================================
+   9. FORMULÁRIOS COM TOGGLE
+======================================= */
+#formularioCadastro {
+    overflow: hidden;
+    transition: max-height 0.4s ease, opacity 0.4s ease;
+    max-height: 0;
+    opacity: 0;
+    display: block;
+}
+
+#formularioCadastro.ativo {
+    max-height: 500px;
+    opacity: 1;
+}
+
+/* =======================================
+   10. ANIMAÇÕES SLIDE
+======================================= */
+@keyframes slideDownFade {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUpFade {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+
+.fade-slide-down {
+    animation: slideDownFade 0.4s ease forwards;
+}
+
+.fade-slide-up {
+    animation: slideUpFade 0.4s ease forwards;
+}
+
+/* =======================================
+   11. DASHBOARD / PÁGINA INICIAL
+======================================= */
+.hover-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-dashboard {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+.card-dashboard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+
+/* ----------------------------
+   Estilos customizados: Login
+---------------------------- */
+
+body.login-page {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: url('/static/img/login-bg.jpg') no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+/* Sobreposição escura sutil */
+.login-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 0;
+}
+
+/* Wrapper do conteúdo de login */
+.login-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    position: relative;
+    z-index: 1;
+}
+
+/* Card de login */
+.card-login {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease;
+    width: 100%;
+    max-width: 420px;
+}
+
+.card-login:hover {
+    transform: scale(1.01);
+}
+
+/* Inputs e botões */
+.card-login .form-control {
+    border-radius: 0.5rem;
+}
+
+.card-login .form-control:focus {
+    box-shadow: 0 0 0 0.2rem rgba(29, 111, 214, 0.25);
+    border-color: #1d6fd6;
+}
+
+.card-login .btn-success {
+    background-color: #1d6fd6;
+    border: none;
+    font-weight: bold;
+    color: #fff;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-login .btn-success:hover {
+    background-color: #145bbd;
+    box-shadow: 0 0 0.5rem rgba(29, 111, 214, 0.4);
+}
+
+/* Alinhamento do botão de senha */
+.card-login .input-group .btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+/* Responsividade */
+@media (max-width: 576px) {
+    .card-login {
+        padding: 1.5rem;
+    }
+}

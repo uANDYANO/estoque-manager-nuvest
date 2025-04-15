@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4 animate-entry">
+    <h2 class="text-primary fw-bold mb-4">
+        <i class="bi bi-tags-fill me-2"></i>Estoque de Uniformes
+    </h2>
+
+    <div class="card shadow-sm rounded-2">
+        <div class="card-body">
+
+            <!-- Botão para mostrar formulário de novo uniforme -->
+            <button id="botaoToggleCadastro" class="btn btn-primary mb-3" onclick="toggleFormularioCadastro()">
+                <i class="bi bi-plus-circle me-1"></i> Cadastrar Novo Uniforme
+            </button>
+
+            <!-- Formulário oculto de cadastro -->
+            <div id="formularioCadastro">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label fw-semibold">Tipo:</label>
+                            <input type="text" class="form-control" name="tipo" required>
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <label class="form-label fw-semibold">Tamanho:</label>
+                            <input type="text" class="form-control" name="tamanho" required>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <label class="form-label fw-semibold">Quantidade Inicial:</label>
+                            <input type="number" class="form-control" name="quantidade" required min="0">
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <label class="form-label fw-semibold">Status:</label>
+                            <select class="form-control" name="status" required>
+                                <option value="Novo">Novo</option>
+                                <option value="Usado">Usado</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success mt-3">
+                        <i class="bi bi-save me-1"></i>Salvar
+                    </button>
+                </form>
+                <hr>
+            </div>
+
+            <!-- Campo de busca -->
+            <div class="row g-3 mb-4">
+                <!-- Filtro por Tipo (datalist) -->
+                <div class="col-md-4">
+                    <label for="filtroTipoInput" class="form-label fw-semibold">
+                        <i class="bi bi-filter me-1"></i>Tipo de Uniforme
+                    </label>
+                    <input id="filtroTipoInput" list="tiposDatalist" oninput="filtrarTodosUniformes()" class="form-control"
+                        placeholder="Digite para filtrar...">
+                    <datalist id="tiposDatalist"></datalist>
+                </div>
+
+                <!-- Filtro por Tamanho -->
+                <div class="col-md-4">
+                    <label for="filtroTamanho" class="form-label fw-semibold">
+                        <i class="bi bi-arrows-expand me-1"></i>Tamanho
+                    </label>
+                    <select id="filtroTamanho" onchange="filtrarTodosUniformes()" class="form-select">
+                        <option value="">Todos os Tamanhos</option>
+                    </select>
+                </div>
+
+                <!-- Filtro por Status -->
+                <div class="col-md-4">
+                    <label for="filtroStatus" class="form-label fw-semibold">
+                        <i class="bi bi-info-circle me-1"></i>Status
+                    </label>
+                    <select id="filtroStatus" onchange="filtrarTodosUniformes()" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="novo">Novo</option>
+                        <option value="usado">Usado</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn btn-outline-secondary mb-4" onclick="limparFiltrosUniformes(); filtrarTodosUniformes();">
+                <i class="bi bi-x-circle"></i> Limpar Filtros
+            </button>
+
+            <!-- Tabela de uniformes -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-3">
+                    <div class="card text-white bg-primary shadow-sm rounded-3">
+                        <div class="card-body">
+                            <h6 class="card-title mb-2"><i class="bi bi-box"></i> Total de Itens</h6>
+                            <h3 class="card-text">{{ total_itens }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-success shadow-sm rounded-3">
+                        <div class="card-body">
+                            <h6 class="card-title mb-2"><i class="bi bi-plus-circle"></i> Itens Novos</h6>
+                            <h3 class="card-text">{{ total_novos }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-secondary shadow-sm rounded-3">
+                        <div class="card-body">
+                            <h6 class="card-title mb-2"><i class="bi bi-recycle"></i> Itens Usados</h6>
+                            <h3 class="card-text">{{ total_usados }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-danger shadow-sm rounded-3">
+                        <div class="card-body">
+                            <h6 class="card-title mb-2"><i class="bi bi-exclamation-triangle"></i> Baixo Estoque</h6>
+                            <h3 class="card-text">{{ quantidade_baixa }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for u in uniformes %}
+                <div class="col">
+                    <div class="card card-uniforme 
+                        {% if u.quantidade < 100 %}
+                            card-quantidade-baixa
+                        {% elif u.status == 'Novo' %}
+                            card-novo
+                        {% else %}
+                            card-usado
+                        {% endif %}
+                    ">
+                        <div class="card-body">
+                            <div class="titulo-uniforme d-flex align-items-center">
+                                <i class="bi bi-tag-fill me-1 text-primary"></i>
+                                <span style="cursor: pointer;" class="texto-tipo text-truncate w-100" title="{{ u.tipo }}">{{ u.tipo }}</span>
+                            </div>
+
+                            <div class="info-row">
+                                <span class="info-label">Tamanho:</span>
+                                <span>{{ u.tamanho }}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Status:</span>
+                                <span>
+                                    {% if u.status == 'Novo' %}
+                                    <span class="badge bg-success">Novo</span>
+                                    {% elif u.status == 'Usado' %}
+                                    <span class="badge bg-secondary">Usado</span>
+                                    {% else %}
+                                    <span class="badge bg-dark">{{ u.status }}</span>
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="info-row mb-2">
+                                <span class="info-label">Quantidade:</span>
+                                <span>
+                                    {% if u.quantidade == 0 %}
+                                    <span class="quantidade-alerta">Esgotado</span>
+                                    {% elif u.quantidade < 100 %} <span class="quantidade-alerta">{{ u.quantidade
+                                        }}</span>
+                                {% elif u.quantidade > 100 %}
+                                <span class="quantidade-normal">{{ u.quantidade }}</span>
+                                {% else %}
+                                {{ u.quantidade }}
+                                {% endif %}
+                                </span>
+                            </div>
+
+                            <!-- Barra de progresso (limite visual opcional = 1500 unidades) -->
+                            {% set limite = 1500 %}
+                            {% set percentual = (u.quantidade / limite) * 100 if u.quantidade < limite else 100 %} <div
+                                class="progress mb-1">
+                                <div class="progress-bar
+                                    {% if u.quantidade == 0 %}
+                                        bg-danger
+                                    {% elif u.quantidade <= 5 %}
+                                        bg-warning
+                                    {% else %}
+                                        bg-success
+                                    {% endif %}" role="progressbar" style="width: {{ percentual }}%;"
+                                    aria-valuenow="{{ u.quantidade }}" aria-valuemin="0" aria-valuemax="{{ limite }}">
+                                    {{ u.quantidade }}
+                                </div>
+                        </div>
+                    </div>
+                    <div class="card-footer d-flex justify-content-end bg-transparent border-0">
+                        <a href="{{ url_for('editar_uniforme', id=u.id) }}" class="btn btn-sm btn-outline-warning me-2"
+                            title="Editar">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <form action="{{ url_for('excluir_uniforme', id=u.id) }}" method="POST"
+                            onsubmit="return confirm('Deseja realmente inativar este uniforme?')">
+                            <input type="hidden" name="acao" value="inativar_uniforme">
+                            <button class="btn btn-sm btn-outline-danger" title="Excluir">
+                                <i class="bi bi-trash3-fill"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+</div>
+
+{% endblock %}

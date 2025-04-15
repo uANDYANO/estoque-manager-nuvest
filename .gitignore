@@ -1,0 +1,28 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Flask & arquivos temporários
+instance/
+.env
+.env.*
+*.log
+
+# VSCode & sistema
+.vscode/
+.DS_Store
+*.bak
+*.zip
+*.db
+
+# Node
+node_modules/
+dist/
+prod/
+
+# PyInstaller
+build/
+*.spec
+*.exe

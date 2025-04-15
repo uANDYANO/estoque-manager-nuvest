@@ -1,0 +1,289 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5 animate-entry">
+    <h2 class="text-primary fw-bold mb-4"><i class="bi bi-arrow-repeat me-2"></i>Movimentação de Uniformes</h2>
+    
+    <!-- Formulário de registro de movimentação -->
+    <button id="botaoToggleMovimentacao" onclick="toggleFormularioMovimentacao()" class="btn btn-success mb-3">
+        <i class="bi bi-plus-circle me-1"></i> Novo Registro de Movimentação
+    </button>
+
+    <div id="formularioMovimentacao" class="card p-4 mb-4 shadow-sm border border-success" style="display: none;">
+        <h4 class="mb-3 text-success">
+            <i class="bi bi-plus-circle"></i> Novo Registro de Movimentação
+        </h4>
+
+        <form method="POST">
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="fw-semibold"><i class="bi bi-person-badge"></i> Matrícula:</label>
+                    <input type="text" class="form-control" id="matricula" name="matricula" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="fw-semibold"><i class="bi bi-calendar-event"></i> Data da Entrega/Devolução:</label>
+                    <input type="date" class="form-control" name="data_entrega" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="fw-semibold"><i class="bi bi-box-seam"></i> Uniforme:</label>
+                    <select class="form-control" id="uniformeSelect" name="uniforme_id" required>
+                        <option value="">Selecione</option>
+                        {% for u in uniformes %}
+                        <option value="{{ u.id }}">{{ u.tipo }} - {{ u.tamanho }} - {{ u.status }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="fw-semibold"><i class="bi bi-123"></i> Quantidade:</label>
+                    <input type="number" class="form-control" name="quantidade" required min="1">
+                </div>
+            </div>
+
+            <div class="row mt-2">
+                <div class="col-md-3">
+                    <label class="fw-semibold"><i class="bi bi-arrow-left-right"></i> Movimento:</label>
+                    <select class="form-control" name="movimento" required>
+                        <option value="entrega">Entrega</option>
+                        <option value="devolucao">Devolução</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="fw-semibold"><i class="bi bi-person-circle"></i> Funcionário:</label>
+                    <input type="text" class="form-control" id="nomeFuncionario" name="nome_funcionario" readonly>
+                </div>
+                <div class="col-md-3">
+                    <label class="fw-semibold"><i class="bi bi-building"></i> Unidade:</label>
+                    <input type="text" class="form-control" id="unidadeFuncionario" name="unidade" readonly>
+                    <input type="hidden" name="unidade_id" id="unidadeIdFuncionario">
+                </div>
+                <div class="col-md-3">
+                    <label class="fw-semibold"><i class="bi bi-arrows-expand"></i> Tamanho:</label>
+                    <input type="text" class="form-control" id="tamanhoUniforme" name="tamanho" readonly>
+                </div>
+            </div>
+
+            <div class="row mt-3 justify-content-end">
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="bi bi-check-circle"></i> Registrar Movimento
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Filtros -->
+    <form method="GET" class="card border-primary shadow-sm p-4 mb-4">
+        <h4 class="mb-3 text-primary">
+            <i class="bi bi-funnel-fill"></i> Filtros de Pesquisa
+        </h4>
+
+        <div class="row g-3">
+            <div class="col-md-2">
+                <label for="filtroMatricula" class="form-label fw-semibold"><i class="bi bi-person-badge"></i> Matrícula:</label>
+                <input type="text" class="form-control" id="filtroMatricula" name="filtro_matricula"
+                    value="{{ request.args.get('filtro_matricula', '') }}">
+            </div>
+
+            <div class="col-md-2">
+                <label for="filtro_unidade" class="form-label fw-semibold"><i class="bi bi-building"></i> Unidade:</label>
+                <select name="filtro_unidade" class="form-select">
+                    <option value="">Todas as Unidades</option>
+                    {% for u in unidades %}
+                      <option value="{{ u.id }}" {% if filtro_unidade == u.id|string %}selected{% endif %}>{{ u.nome }}</option>
+                    {% endfor %}
+                  </select>
+                  
+            </div>
+
+            <div class="col-md-2">
+                <label for="data_inicio" class="form-label fw-semibold"><i class="bi bi-calendar-range"></i> Data Início:</label>
+                <input type="date" class="form-control" id="data_inicio" name="data_inicio"
+                    value="{{ request.args.get('data_inicio', '') }}">
+            </div>
+
+            <div class="col-md-2">
+                <label for="data_fim" class="form-label fw-semibold"><i class="bi bi-calendar-range-fill"></i> Data Fim:</label>
+                <input type="date" class="form-control" id="data_fim" name="data_fim"
+                    value="{{ request.args.get('data_fim', '') }}">
+            </div>
+
+            <div class="col-md-2">
+                <label for="filtro_movimento" class="form-label fw-semibold"><i class="bi bi-arrow-left-right"></i>
+                    Movimento:</label>
+                <select class="form-select" name="filtro_movimento" id="filtro_movimento">
+                    <option value="">Todos</option>
+                    <option value="entrega" {% if request.args.get('filtro_movimento')=='entrega' %}selected{% endif %}>
+                        Entrega</option>
+                    <option value="devolucao" {% if request.args.get('filtro_movimento')=='devolucao' %}selected{% endif
+                        %}>
+                        Devolução</option>
+                    <option value="cancelado" {% if request.args.get('filtro_movimento')=='cancelado' %}selected{% endif
+                        %}>
+                        Cancelado</option>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label for="filtro_tipo_uniforme" class="form-label fw-semibold"><i class="bi bi-box-seam"></i> Tipo de
+                    Uniforme:</label>
+                <select class="form-select" name="filtro_tipo_uniforme" id="filtro_tipo_uniforme">
+                    <option value="">Todos</option>
+                    {% for tipo in tipos_uniforme %}
+                    <option value="{{ tipo }}" {% if request.args.get('filtro_tipo_uniforme')==tipo %}selected{% endif
+                        %}>
+                        {{ tipo }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> Filtrar
+                </button>
+            </div>
+            <div class="col-md-2">
+                <a href="{{ url_for('movimentacoes') }}" class="btn btn-outline-secondary w-100">
+                    <i class="bi bi-x-circle"></i> Limpar
+                </a>
+            </div>
+            <div class="col-md-2">
+                <a href="{{ url_for('exportar_movimentacoes',
+                    filtro_matricula=filtro_matricula,
+                    filtro_unidade=filtro_unidade,
+                    filtro_movimento=filtro_movimento,
+                    filtro_tipo_uniforme=filtro_tipo_uniforme,
+                    data_inicio=data_inicio,
+                    data_fim=data_fim) }}"
+                    class="btn btn-outline-success w-100">
+                    <i class="bi bi-file-earmark-excel"></i> Exportar Excel
+                </a>
+            </div>            
+        </div>
+    </form>
+
+    <!-- Tabela de movimentações -->
+    <div class="card shadow-sm rounded-2">
+        <div class="card-body">
+            <h5 class="card-title fw-semibold mb-4"><i class="bi bi-boxes me-2"></i>Registros de Movimentações</h5>
+            
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-dark table-header-small">
+                        <tr>
+                            <th><i class="bi bi-clock-history me-1"></i>Data do Registro</th>
+                            <th><i class="bi bi-person-vcard me-1"></i>Funcionário</th>
+                            <th><i class="bi bi-hash me-1"></i>Matrícula</th>
+                            <th><i class="bi bi-building me-1"></i>Unidade</th>
+                            <th><i class="bi bi-tags me-1"></i>Uniforme</th>
+                            <th><i class="bi bi-arrows-expand me-1"></i>Tamanho</th>
+                            <th><i class="bi bi-123 me-1"></i>Quantidade</th>
+                            <th><i class="bi bi-info-circle me-1"></i>Status</th>
+                            <th><i class="bi bi-calendar-check me-1"></i>Data de Entrega</th>
+                            <th><i class="bi bi-arrow-left-right me-1"></i>Movimento</th>
+                            <th><i class="bi bi-gear me-1"></i>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for m in movimentacoes.items %}
+                        <tr>
+                            <td>{{ m.data_registro.strftime('%d/%m/%Y %H:%M') }}</td>
+                            <td>{{ m.nome_funcionario }}</td>
+                            <td>{{ m.matricula }}</td>
+                            <td>{{ m.unidade.nome }}</td>
+                            <td>{{ m.uniforme.tipo }}</td>
+                            <td>{{ m.tamanho }}</td>
+                            <td>{{ m.quantidade }}</td>
+                            <td>{{ m.status }}</td>
+                            <td>{{ m.data_entrega.strftime('%d/%m/%Y') }}</td>
+                            <td>
+                                {% if m.movimento == 'entrega' %}
+                                    <span class="badge bg-primary">Entrega</span>
+                                {% elif m.movimento == 'devolucao' %}
+                                    <span class="badge bg-success">Devolução</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Cancelado</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if m.movimento != 'Cancelado' %}
+                                <form method="POST" action="{{ url_for('cancelar_movimentacao', id=m.id) }}" class="d-inline">
+                                    <button class="btn btn-sm btn-outline-danger"
+                                        onclick="return confirm('Tem certeza que deseja cancelar esta movimentação?')">
+                                        <i class="bi bi-x-circle"></i> Cancelar
+                                    </button>
+                                </form>
+                                {% else %}
+                                <span class="badge bg-secondary">Cancelado</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="12" class="text-center text-muted">Nenhum registro encontrado.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+    
+            <!-- Paginação -->
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if movimentacoes.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('movimentacoes', pagina=movimentacoes.prev_num,
+                            filtro_matricula=filtro_matricula,
+                            filtro_unidade=filtro_unidade,
+                            filtro_movimento=filtro_movimento,
+                            filtro_tipo_uniforme=filtro_tipo_uniforme,
+                            data_inicio=data_inicio,
+                            data_fim=data_fim) }}">Anterior</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+                    {% endif %}
+    
+                    {% for page_num in movimentacoes.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                        {% if page_num %}
+                            {% if page_num == movimentacoes.page %}
+                                <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('movimentacoes', pagina=page_num,
+                                        filtro_matricula=filtro_matricula,
+                                        filtro_unidade=filtro_unidade,
+                                        filtro_movimento=filtro_movimento,
+                                        filtro_tipo_uniforme=filtro_tipo_uniforme,
+                                        data_inicio=data_inicio,
+                                        data_fim=data_fim) }}">{{ page_num }}</a>
+                                </li>
+                            {% endif %}
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">…</span></li>
+                        {% endif %}
+                    {% endfor %}
+    
+                    {% if movimentacoes.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('movimentacoes', pagina=movimentacoes.next_num,
+                            filtro_matricula=filtro_matricula,
+                            filtro_unidade=filtro_unidade,
+                            filtro_movimento=filtro_movimento,
+                            filtro_tipo_uniforme=filtro_tipo_uniforme,
+                            data_inicio=data_inicio,
+                            data_fim=data_fim) }}">Próxima</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link">Próxima</span></li>
+                    {% endif %}
+                </ul>
+            </nav>
+    
+        </div>
+    </div>    
+</div>
+    {% endblock %}
