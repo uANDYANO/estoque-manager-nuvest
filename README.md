@@ -28,19 +28,19 @@ Sistema web completo para controle de estoque de uniformes, com gestão de funci
 
 ## ⚙️ Configuração Inicial
 
-```bash
+
 1. Clone o repositório
-
-git clone https://github.com/seu-usuario/estoque-manager.git
+```bash
+git clone https://github.com/uANDYANO/estoque-manager-nuvest.git
 cd estoque-manager
-
+```
 2. Crie o ambiente virtual
-
+```bash
 python -m venv venv
 venv\Scripts\activate
-
+```
 3. Instale as dependências
-
+```bash
 pip install -r requirements.txt
 
 🔐 Variáveis de Ambiente
@@ -99,7 +99,7 @@ python atualizar_senha.py
 /app.py                   → Arquivo principal da aplicação
 /.env                     → Variáveis de ambiente
 /requirements.txt         → Dependências Python
-
+```
 👨‍💼 Desenvolvido por
 
 Anderson Salviano
