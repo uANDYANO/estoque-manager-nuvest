@@ -29,7 +29,7 @@ Sistema web completo para controle de estoque de uniformes, com gestão de funci
 ## ⚙️ Configuração Inicial
 
 ```bash
-### 1. Clone o repositório
+1. Clone o repositório
 
 git clone https://github.com/seu-usuario/estoque-manager.git
 cd estoque-manager
